@@ -1,73 +1,16 @@
-import { Avatar, Box, Card, Tabs, Typography } from "@mui/material";
-import React, { useState } from "react";
+import { Avatar, Box, Card, Tabs, Typography, useTheme } from "@mui/material";
+import React, { useEffect, useState } from "react";
 import Row from "../../components/Row";
 import LinearProgress from "@mui/material/LinearProgress";
 import WarningAmberIcon from "@mui/icons-material/WarningAmber";
+import TaskAltIcon from "@mui/icons-material/TaskAlt";
+import Column from "../../components/Column";
+import { useSelector } from "react-redux";
 
 function ListProjectCard() {
   const [value, setValue] = useState(1);
-  const data = [
-    {
-      projectTitle: "Insurance App",
-      client: "Verto",
-      totalBudget: "5000",
-      profit: "2500",
-      completionStatus: "25",
-      isDelayed: true,
-      actualHours: 1100,
-      message: "1000 hours over budget",
-    },
-    {
-      projectTitle: "Insurance App",
-      client: "Verto",
-      totalBudget: "5000",
-      profit: "2500",
-      completionStatus: "25",
-      isDelayed: true,
-      actualHours: 1100,
-      message: "1000 hours over budget",
-    },
-    {
-      projectTitle: "Insurance App",
-      client: "Verto",
-      totalBudget: "5000",
-      profit: "2500",
-      completionStatus: "25",
-      isDelayed: true,
-      actualHours: 1100,
-      message: "1000 hours over budget",
-    },
-    {
-      projectTitle: "Insurance App",
-      client: "Verto",
-      totalBudget: "5000",
-      profit: "2500",
-      completionStatus: "25",
-      isDelayed: true,
-      actualHours: 1100,
-      message: "1000 hours over budget",
-    },
-    {
-      projectTitle: "Insurance App",
-      client: "Verto",
-      totalBudget: "5000",
-      profit: "2500",
-      completionStatus: "25",
-      isDelayed: true,
-      actualHours: 1100,
-      message: "1000 hours over budget",
-    },
-    {
-      projectTitle: "Insurance App",
-      client: "Verto",
-      totalBudget: "5000",
-      profit: "2500",
-      completionStatus: "25",
-      isDelayed: true,
-      actualHours: 1100,
-      message: "1000 hours over budget",
-    },
-  ];
+  const projectsList = useSelector((state) => state.projects.projectsList);
+
   return (
     <Tabs
       value={value}
@@ -77,7 +20,7 @@ function ListProjectCard() {
       allowScrollButtonsMobile
       aria-label="scrollable force tabs example"
     >
-      {data.map((obj, index) => (
+      {projectsList.map((obj, index) => (
         <Card
           sx={{
             minWidth: "250px",
@@ -145,10 +88,21 @@ const ProjectSummary = ({
   totalBudget,
   profit,
   completionStatus,
-  isDelayed,
   actualHours,
   message,
 }) => {
+  const theme = useTheme();
+  const [colorLinearProgress, setColorLinearProgress] = useState("inprogress");
+  useEffect(() => {
+    if (completionStatus < 0) {
+      setColorLinearProgress("delayed");
+    } else if (completionStatus === 100) {
+      setColorLinearProgress("completed");
+    } else {
+      setColorLinearProgress("inprogress");
+    }
+  }, [completionStatus, theme]);
+
   return (
     <>
       <Row
@@ -157,35 +111,47 @@ const ProjectSummary = ({
           alignItems: "flex-start",
         }}
       >
-        <Box>
-          <Typography>{projectTitle}</Typography>
-          <Typography>{client}</Typography>
-        </Box>
+        <Column>
+          <Typography variant="titleText">{projectTitle}</Typography>
+          <Typography variant="subtitleText">{client}</Typography>
+        </Column>
         <Avatar />
       </Row>
-      <Box>
-        <Typography>
+      <Column>
+        <Typography variant="subtitleText">
           Total Budget <Box component="span">{totalBudget}</Box>
         </Typography>
-        <Typography>
+        <Typography variant="subtitleText">
           Profitability <Box component="span">{profit}</Box>
         </Typography>
-      </Box>
-      {isDelayed ? (
+      </Column>
+      {completionStatus < 0 && (
         <Row sx={{ justifyContent: "flex-end" }}>
+          <WarningAmberIcon color={"incomplete"} />
+        </Row>
+      )}
+      {completionStatus > 0 && completionStatus < 100 && (
+        <Row sx={{ justifyContent: "flex-end", visibility: "hidden" }}>
           <WarningAmberIcon />
         </Row>
-      ) : (
-        <></>
+      )}
+      {completionStatus === 100 && (
+        <Row sx={{ justifyContent: "flex-end" }}>
+          <TaskAltIcon size="medium" color="completed" />
+        </Row>
       )}
 
-      <LinearProgress variant="determinate" value={completionStatus} />
-      <Box>
-        <Typography>
+      <LinearProgress
+        variant="determinate"
+        value={completionStatus < 0 ? 100 : completionStatus}
+        color={colorLinearProgress}
+      />
+      <Column>
+        <Typography variant="subtitleText">
           Actual Hours <Box component="span">{actualHours}</Box>
         </Typography>
-        <Typography>{message}</Typography>
-      </Box>
+        <Typography variant="subtitleText">{message}</Typography>
+      </Column>
     </>
   );
 };

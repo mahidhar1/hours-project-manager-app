@@ -1,4 +1,4 @@
-import { Box, Card, Typography } from "@mui/material";
+import { Box, Card, Typography, useTheme } from "@mui/material";
 import React from "react";
 import Row from "../../components/Row";
 
@@ -8,6 +8,7 @@ import LoopIcon from "@mui/icons-material/Loop";
 import WarningAmberIcon from "@mui/icons-material/WarningAmber";
 import GroupIcon from "@mui/icons-material/Group";
 import { styled } from "@mui/system";
+import { useSelector } from "react-redux";
 
 const NumberText = styled(Typography)(({ theme }) => ({
   textAlign: "center",
@@ -32,7 +33,7 @@ const Column = styled(Box)(({ theme }) => ({
 
 const FlexCard = styled(Card)(({ theme }) => ({
   width: "20%",
-  height: "5rem",
+  height: "6rem",
   margin: "0 16px",
   padding: "8px",
   display: "flex",
@@ -46,62 +47,105 @@ const FlexCard = styled(Card)(({ theme }) => ({
 }));
 
 function ListStatusCard() {
+  const theme = useTheme();
+  const members = useSelector((state) => state.team.members);
+  const projectsList = useSelector((state) => state.projects.projectsList);
+  const total = projectsList.length;
+  const ongoing = projectsList.filter(
+    (obj) => obj.completionStatus >= 0 && obj.completionStatus < 100,
+  ).length;
+  const completed = projectsList.filter(
+    (obj) => obj.completionStatus === 100,
+  ).length;
+  const delayed = projectsList.filter((obj) => obj.completionStatus < 0).length;
+
+  const projectStatus = {
+    total,
+    ongoing,
+    completed,
+    delayed,
+  };
+
   return (
     <Row>
       <FlexCard>
-        <GridViewIcon fontSize="1.5rem" />
+        <GridViewIcon
+          size="medium"
+          sx={{ color: `${theme.palette.secondary.text}` }}
+        />
         <Column
           sx={{
             justifyContent: "flex-start",
           }}
         >
-          <NumberText>5</NumberText>
+          <NumberText>{projectStatus?.total}</NumberText>
           <TitleText>Total Projects</TitleText>
         </Column>
       </FlexCard>
 
       <FlexCard>
-        <TaskAltIcon fontSize="1.5rem" />
+        <TaskAltIcon
+          size="medium"
+          sx={{ color: `${theme.palette.secondary.text}` }}
+        />
         <Column
           sx={{
             justifyContent: "flex-start",
           }}
         >
-          <NumberText>5</NumberText>
-          <TitleText>Total Projects</TitleText>
+          <NumberText>{projectStatus?.ongoing}</NumberText>
+          <TitleText>Ongoing</TitleText>
         </Column>
       </FlexCard>
       <FlexCard>
-        <LoopIcon fontSize="1.5rem" />
+        <LoopIcon
+          size="medium"
+          sx={{ color: `${theme.palette.secondary.text}` }}
+        />
         <Column
           sx={{
             justifyContent: "flex-start",
           }}
         >
-          <NumberText>5</NumberText>
-          <TitleText>Total Projects</TitleText>
+          <NumberText>{projectStatus?.completed}</NumberText>
+          <TitleText>Completed</TitleText>
+        </Column>
+      </FlexCard>
+      <FlexCard
+        sx={{
+          backgroundColor: `${projectStatus?.delayed > 0 ? "pink" : "white"}`,
+        }}
+      >
+        <WarningAmberIcon
+          size="medium"
+          sx={{
+            color: `${
+              projectStatus?.delayed ? "red" : theme.palette.secondary.text
+            }`,
+          }}
+        />
+
+        <Column
+          sx={{
+            justifyContent: "flex-start",
+          }}
+        >
+          <NumberText>{projectStatus?.delayed}</NumberText>
+          <TitleText>Delayed</TitleText>
         </Column>
       </FlexCard>
       <FlexCard>
-        <WarningAmberIcon fontSize="1.5rem" />
+        <GroupIcon
+          size="medium"
+          sx={{ color: `${theme.palette.secondary.text}` }}
+        />
         <Column
           sx={{
             justifyContent: "flex-start",
           }}
         >
-          <NumberText>5</NumberText>
-          <TitleText>Total Projects</TitleText>
-        </Column>
-      </FlexCard>
-      <FlexCard>
-        <GroupIcon fontSize="1.5rem" />
-        <Column
-          sx={{
-            justifyContent: "flex-start",
-          }}
-        >
-          <NumberText>5</NumberText>
-          <TitleText>Total Projects</TitleText>
+          <NumberText>{members.length}</NumberText>
+          <TitleText>Employees</TitleText>
         </Column>
       </FlexCard>
     </Row>

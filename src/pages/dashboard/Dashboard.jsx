@@ -1,4 +1,4 @@
-import { Box, Button, Typography } from "@mui/material";
+import { Box, Button, Card, Typography } from "@mui/material";
 import React from "react";
 import Row from "../../components/Row";
 import ChartLine from "./ChartLine";
@@ -19,40 +19,28 @@ function Dashboard() {
       <Row
         sx={{
           justifyContent: "space-between",
-          border: "1px solid green",
+          marginTop: "16px",
         }}
       >
         <Box
           sx={{
-            border: "1px solid red",
-            width: "85%",
-            padding: "16px 0px 0px 0px",
+            width: "80%",
+            padding: "0px 0px 0px 20px",
           }}
         >
           <ListStatusCard />
-          <Row>
-            <Box
-              sx={{
-                flexGrow: "3",
-                border: "1px solid green",
-              }}
-            >
-              <ChartLine />
-            </Box>
-            <Box
-              sx={{
-                flexGrow: "2",
-                border: "1px solid green",
-              }}
-            >
-              <ChartPie />
-            </Box>
+          <Row
+            sx={{
+              padding: "16px",
+            }}
+          >
+            <ChartLine />
+            <ChartPie />
           </Row>
         </Box>
         <Box
           sx={{
-            width: "15%",
-            border: "1px solid grey",
+            width: "20%",
           }}
         >
           <ListTeamMood />
