@@ -36,12 +36,14 @@ function Navbar() {
           sx={{
             fontSize: "1.5rem",
             lineHeight: "2rem",
+            fontWeight: 600,
           }}
         >
           <Box
             component="span"
             sx={{
               color: `${theme.palette.secondary.text}`,
+              fontWeight: 700,
             }}
           >
             H
