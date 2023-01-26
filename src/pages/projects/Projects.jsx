@@ -1,30 +1,15 @@
-import {
-  Autocomplete,
-  Avatar,
-  Box,
-  Button,
-  Card,
-  Dialog,
-  DialogActions,
-  DialogContent,
-  DialogTitle,
-  TextField,
-  Typography,
-  useTheme,
-} from "@mui/material";
+import { Box, Button, Card, Typography } from "@mui/material";
 import React, { useEffect, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
+import { useSelector } from "react-redux";
 import Column from "../../components/Column";
 import Row from "../../components/Row";
-import { addMember } from "../../redux/teamSlice";
 
 import LinearProgress from "@mui/material/LinearProgress";
 import WarningAmberIcon from "@mui/icons-material/WarningAmber";
 import TaskAltIcon from "@mui/icons-material/TaskAlt";
-import { addProject } from "../../redux/projectsSlice";
+import DialogBoxAddProject from "../../components/DialogBoxAddProject";
 
 function Projects() {
-  const dispatch = useDispatch();
   const projectsList = useSelector((state) => state.projects.projectsList);
   const [selected, setSelected] = useState(0);
 
@@ -57,44 +42,17 @@ function Projects() {
 export default Projects;
 
 const ProjectsList = ({ projects, selected, handleSelect }) => {
-  const dispatch = useDispatch();
-  const members = useSelector((state) => state.team.members);
-
-  const [projectTitle, setProjectTitle] = useState("");
-  const [client, setClient] = useState("");
-  const [totalBudget, setTotalBudget] = useState(0);
-  const [actualHours, setActualHours] = useState(0);
-  const [projectMembers, setProjectMembers] = useState([]);
-
   const [open, setOpen] = useState(false);
-  const handleClickOpen = () => {
+
+  const handleOpen = () => {
     setOpen(true);
   };
 
   const handleClose = () => {
     setOpen(false);
+    //handleSelect(projects.length);
   };
 
-  const handleSubmit = () => {
-    let projectData = {
-      projectTitle,
-      client,
-      totalBudget,
-      actualHours,
-      profit: "",
-      completionStatus: 1,
-      message: "",
-      projectMembers,
-    };
-    dispatch(addProject(projectData));
-    setOpen(false);
-    setProjectTitle("");
-    setClient("");
-    setTotalBudget(0);
-    setActualHours(0);
-    setProjectMembers([]);
-    handleSelect(projects.length);
-  };
   return (
     <>
       <Column
@@ -117,7 +75,7 @@ const ProjectsList = ({ projects, selected, handleSelect }) => {
           <Typography variant="h4" fontWeight="bold">
             Projects
           </Typography>
-          <Button variant="contained" onClick={handleClickOpen}>
+          <Button variant="contained" onClick={handleOpen}>
             Add Project
           </Button>
         </Card>
@@ -146,73 +104,16 @@ const ProjectsList = ({ projects, selected, handleSelect }) => {
           </Card>
         ))}
       </Column>
-      <Dialog open={open} onClose={handleClose}>
-        <DialogTitle>Add A Project</DialogTitle>
-        <DialogContent>
-          <TextField
-            autoFocus
-            margin="dense"
-            label="Project Name"
-            type="text"
-            fullWidth
-            variant="standard"
-            value={projectTitle}
-            onChange={(e) => setProjectTitle(e.target.value)}
-          />
-          <TextField
-            margin="dense"
-            label="Client Name"
-            type="text"
-            fullWidth
-            variant="standard"
-            value={client}
-            onChange={(e) => setClient(e.target.value)}
-          />
-          <TextField
-            margin="dense"
-            label="Budget allocated"
-            type="text"
-            fullWidth
-            variant="standard"
-            value={totalBudget}
-            onChange={(e) => setTotalBudget(e.target.value)}
-          />
-          <TextField
-            margin="dense"
-            label="Hours Allocated"
-            type="text"
-            fullWidth
-            variant="standard"
-            value={actualHours}
-            onChange={(e) => setActualHours(e.target.value)}
-          />
-          <Autocomplete
-            multiple
-            id="tags-standard"
-            options={members}
-            getOptionLabel={(option) => `${option.name}, ${option.position}`}
-            defaultValue={[members[0]]}
-            renderInput={(params) => (
-              <TextField
-                {...params}
-                variant="standard"
-                label="Multiple values"
-                placeholder="Favorites"
-              />
-            )}
-          />
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={handleClose}>Cancel</Button>
-          <Button onClick={handleSubmit}>Submit</Button>
-        </DialogActions>
-      </Dialog>
+      <DialogBoxAddProject
+        open={open}
+        onOpen={handleOpen}
+        onClose={handleClose}
+      />
     </>
   );
 };
 
 const ProjectDetails = ({ data }) => {
-  const theme = useTheme();
   const [colorLinearProgress, setColorLinearProgress] = useState("inprogress");
   const { completionStatus } = data;
   useEffect(() => {
